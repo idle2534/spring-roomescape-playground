@@ -35,6 +35,12 @@ public class ReservationController {
 
   @PostMapping("/reservations")
   public ResponseEntity<Reservation> addReservation(@RequestBody @Validated ReservationRequestDto reservationRequestDto) {
+    try {
+      Long.parseLong(reservationRequestDto.getTime());
+    } catch (NumberFormatException e) {
+      return ResponseEntity.badRequest().build();
+    }
+
     Reservation reservation = reservationService.addReservation(reservationRequestDto);
     return ResponseEntity
         .created(URI.create("/reservations/" + reservation.getId()))
