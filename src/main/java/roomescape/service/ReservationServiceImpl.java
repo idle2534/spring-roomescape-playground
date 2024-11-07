@@ -9,7 +9,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Reservation.NotFoundReservationException;
 import roomescape.domain.Time;
 import roomescape.dto.ReservationRequestDto;
-import roomescape.dto.TimeRequestDto;
 
 @Service
 @RequiredArgsConstructor
@@ -25,13 +24,15 @@ public class ReservationServiceImpl implements ReservationService {
 
   @Override
   public Reservation addReservation(final ReservationRequestDto reservationRequestDto) {
-    Reservation reservation = reservationDao.createReservation(reservationRequestDto);
+    Reservation reservation = reservationDao.save(reservationRequestDto);
+    Time time = timeDao.findById(Long.parseLong(reservationRequestDto.getTime())).orElseThrow();
+    reservation.setTime(time);
     return reservation;
   }
 
   @Override
   public void removeReservation(final Long id) {
-    if (reservationDao.deleteReservation(id) == 0)
+    if (reservationDao.delete(id) == 0)
       throw new NotFoundReservationException();
   }
 }

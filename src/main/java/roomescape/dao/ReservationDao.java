@@ -33,22 +33,23 @@ public class ReservationDao {
         ));
   }
 
-  public Reservation createReservation(ReservationRequestDto reservationRequestDto) {
+  public Reservation save(ReservationRequestDto reservationRequestDto) {
     KeyHolder keyHolder = new GeneratedKeyHolder();
     jdbcTemplate.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(
-          "INSERT INTO reservation (name, date) VALUES (?, ?)",
+          "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
           new String[]{"id"}
       );
       ps.setString(1, reservationRequestDto.getName());
       ps.setString(2, reservationRequestDto.getDate());
+      ps.setLong(3, Long.parseLong(reservationRequestDto.getTime()));
       return ps;
     }, keyHolder);
 
-    return new Reservation(keyHolder.getKey().longValue(), reservationRequestDto.getName(), reservationRequestDto.getDate(), new Time());
+    return new Reservation(keyHolder.getKey().longValue(), reservationRequestDto.getName(), reservationRequestDto.getDate());
   }
 
-  public int deleteReservation(Long id) {
+  public int delete(Long id) {
     return jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
   }
 }

@@ -2,7 +2,9 @@ package roomescape.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,7 +25,20 @@ public class TimeDao {
         ));
   }
 
-  public Time createTime(TimeRequestDto timeRequestDto) {
+  public Optional<Time> findById(Long id) {
+    try {
+      Time time = jdbcTemplate.queryForObject("SELECT * FROM time WHERE id = (?)", (rs, rowNum) ->
+          new Time(
+              rs.getLong("id"),
+              rs.getString("time")),
+          id);
+      return Optional.of(time);
+    } catch (EmptyResultDataAccessException e) {
+      return Optional.empty();
+    }
+  }
+
+  public Time save(TimeRequestDto timeRequestDto) {
     KeyHolder keyHolder = new GeneratedKeyHolder();
     jdbcTemplate.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(
@@ -37,7 +52,7 @@ public class TimeDao {
     return new Time(keyHolder.getKey().longValue(), timeRequestDto.getTime());
   }
 
-  public int deleteTime(Long id) {
+  public int delete(Long id) {
     return jdbcTemplate.update("DELETE FROM time WHERE id = ?", id);
   }
 }

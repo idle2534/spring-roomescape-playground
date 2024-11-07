@@ -12,5 +12,6 @@ public class ReservationRequestDto {
   @NotBlank
   private String date;
 
-  @Blank
+  @NotBlank
+  private String time;
 }

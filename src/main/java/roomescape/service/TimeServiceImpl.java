@@ -21,13 +21,13 @@ public class TimeServiceImpl implements TimeService {
 
   @Override
   public Time addTime(final TimeRequestDto timeRequestDto) {
-    Time time = timeDao.createTime(timeRequestDto);
+    Time time = timeDao.save(timeRequestDto);
     return time;
   }
 
   @Override
   public void removeTime(final Long id) {
-    if (timeDao.deleteTime(id) == 0)
+    if (timeDao.delete(id) == 0)
       throw new NotFoundTimeException();
   }
 }
